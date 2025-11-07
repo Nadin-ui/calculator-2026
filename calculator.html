@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Судьбы 2026 | Нумерология и Астрология</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            button { display: none !important; }
+        }
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } = Recharts;
+
+        // Иконки (упрощенные SVG)
+        const Calendar = () => <span>📅</span>;
+        const Heart = () => <span>❤️</span>;
+        const Briefcase = () => <span>💼</span>;
+        const DollarSign = () => <span>💰</span>;
+        const Users = () => <span>👥</span>;
+        const Sparkles = ({ className }) => <span style={{fontSize: className?.includes('w-12') ? '48px' : '24px'}}>✨</span>;
+        const TrendingUp = () => <span>📈</span>;
+        const AlertCircle = () => <span>⚠️</span>;
+        const MapPin = () => <span>📍</span>;
+        const Clock = () => <span>🕐</span>;
+        const User = () => <span>👤</span>;
+        const Download = () => <span>💾</span>;
+
+        const NumerologyCalculator = () => {
+            const [formData, setFormData] = useState({
+                firstName: '',
+                middleName: '',
+                lastNameBefore: '',
+                lastNameAfter: '',
+                birthDate: '',
+                birthTime: '',
+                birthPlace: ''
+            });
+            
+            const [showResults, setShowResults] = useState(false);
+            const [activeTab, setActiveTab] = useState('overview');
+
+            const letterValues = {
+                'А': 1, 'Б': 2, 'В': 3, 'Г': 4, 'Д': 5, 'Е': 6, 'Ё': 6, 'Ж': 7, 'З': 8, 'И': 9, 'Й': 1,
+                'К': 2, 'Л': 3, 'М': 4, 'Н': 5, 'О': 6, 'П': 7, 'Р': 8, 'С': 9, 'Т': 1, 'У': 2, 'Ф': 3,
+                'Х': 4, 'Ц': 5, 'Ч': 6, 'Ш': 7, 'Щ': 8, 'Ы': 9, 'Ь': 1, 'Ъ': 1, 'Э': 6, 'Ю': 7, 'Я': 8,
+                'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 1,
+                'K': 2, 'L': 3, 'M': 4, 'N': 5, 'O': 6, 'P': 7, 'Q': 8, 'R': 9, 'S': 1, 'T': 2, 'U': 3,
+                'V': 4, 'W': 5, 'X': 6, 'Y': 7, 'Z': 8
+            };
+
+            const vowels = ['А', 'Е', 'Ё', 'И', 'О', 'У', 'Ы', 'Э', 'Ю', 'Я', 'A', 'E', 'I', 'O', 'U', 'Y'];
+
+            const calculateNumber = (str) => {
+                if (!str) return 0;
+                let sum = 0;
+                for (let char of str.toUpperCase()) {
+                    if (letterValues[char]) sum += letterValues[char];
+                }
+                while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+                    sum = sum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                }
+                return sum;
+            };
+
+            const calculateSoulNumber = (name) => {
+                let filtered = name.toUpperCase().split('').filter(char => vowels.includes(char)).join('');
+                return calculateNumber(filtered);
+            };
+
+            const calculatePersonalityNumber = (name) => {
+                let filtered = name.toUpperCase().split('').filter(char => letterValues[char] && !vowels.includes(char)).join('');
+                return calculateNumber(filtered);
+            };
+
+            const calculateLifePath = (date) => {
+                if (!date) return 0;
+                let sum = date.split('-').join('').split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+                    sum = sum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                }
+                return sum;
+            };
+
+            const calculatePersonalYear = (date) => {
+                if (!date) return 0;
+                const [year, month, day] = date.split('-');
+                let sum = parseInt(day) + parseInt(month) + 2026;
+                while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+                    sum = sum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                }
+                return sum;
+            };
+
+            const getZodiacSign = (date) => {
+                if (!date) return { name: '', symbol: '', element: '' };
+                const [year, month, day] = date.split('-').map(Number);
+                if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return { name: 'Овен', symbol: '♈', element: 'Огонь' };
+                if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return { name: 'Телец', symbol: '♉', element: 'Земля' };
+                if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return { name: 'Близнецы', symbol: '♊', element: 'Воздух' };
+                if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return { name: 'Рак', symbol: '♋', element: 'Вода' };
+                if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return { name: 'Лев', symbol: '♌', element: 'Огонь' };
+                if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return { name: 'Дева', symbol: '♍', element: 'Земля' };
+                if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return { name: 'Весы', symbol: '♎', element: 'Воздух' };
+                if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return { name: 'Скорпион', symbol: '♏', element: 'Вода' };
+                if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return { name: 'Стрелец', symbol: '♐', element: 'Огонь' };
+                if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return { name: 'Козерог', symbol: '♑', element: 'Земля' };
+                if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return { name: 'Водолей', symbol: '♒', element: 'Воздух' };
+                return { name: 'Рыбы', symbol: '♓', element: 'Вода' };
+            };
+
+            const getAscendant = (time, zodiac) => {
+                if (!time) return { name: 'Неизвестен', symbol: '?' };
+                const hour = parseInt(time.split(':')[0]);
+                const ascendants = ['Овен ♈', 'Телец ♉', 'Близнецы ♊', 'Рак ♋', 'Лев ♌', 'Дева ♍', 'Весы ♎', 'Скорпион ♏', 'Стрелец ♐', 'Козерог ♑', 'Водолей ♒', 'Рыбы ♓'];
+                const zodiacNames = ['Овен', 'Телец', 'Близнецы', 'Рак', 'Лев', 'Дева', 'Весы', 'Скорпион', 'Стрелец', 'Козерог', 'Водолей', 'Рыбы'];
+                const zodiacIndex = zodiacNames.indexOf(zodiac.name);
+                const ascIndex = (zodiacIndex + Math.floor(hour / 2)) % 12;
+                return { name: ascendants[ascIndex].split(' ')[0], symbol: ascendants[ascIndex].split(' ')[1] };
+            };
+
+            const calculations = useMemo(() => {
+                if (!formData.birthDate || !formData.firstName) return null;
+
+                const fullNameAfter = `${formData.lastNameAfter || formData.lastNameBefore} ${formData.firstName} ${formData.middleName}`.trim();
+                const lifePath = calculateLifePath(formData.birthDate);
+                const soulNumber = calculateSoulNumber(formData.firstName);
+                const personalityNumber = calculatePersonalityNumber(formData.firstName);
+                const destinyNumber = calculateNumber(fullNameAfter);
+                const personalYear = calculatePersonalYear(formData.birthDate);
+                const zodiac = getZodiacSign(formData.birthDate);
+                const ascendant = getAscendant(formData.birthTime, zodiac);
+
+                const baseEnergies = {
+                    1: [7, 8, 9, 8, 10, 9, 8, 7, 9, 10, 9, 10],
+                    2: [6, 7, 8, 9, 8, 9, 10, 8, 7, 8, 9, 8],
+                    3: [8, 9, 10, 9, 8, 10, 9, 8, 9, 10, 9, 9],
+                    4: [6, 6, 7, 8, 7, 8, 9, 8, 9, 8, 7, 7],
+                    5: [9, 8, 9, 10, 9, 10, 8, 9, 10, 9, 8, 9],
+                    6: [7, 8, 9, 9, 8, 10, 9, 8, 7, 8, 9, 9],
+                    7: [6, 7, 8, 7, 8, 7, 9, 10, 8, 7, 8, 9],
+                    8: [8, 8, 9, 9, 10, 9, 8, 7, 10, 10, 9, 9],
+                    9: [7, 6, 8, 7, 9, 8, 7, 6, 8, 9, 8, 10]
+                };
+
+                const energyPattern = baseEnergies[personalYear] || baseEnergies[1];
+                const monthlyEnergy = energyPattern.map((val, i) => ({
+                    month: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'][i],
+                    personal: Math.max(1, Math.min(10, val)),
+                    career: Math.max(1, Math.min(10, val + (i === 4 || i === 9 ? 1 : -1))),
+                    love: Math.max(1, Math.min(10, val - 2 + (i === 5 ? 2 : 0))),
+                    finance: Math.max(1, Math.min(10, val + (i === 8 || i === 9 ? 2 : 0))),
+                    health: Math.max(1, Math.min(10, val + (i === 7 ? 2 : -1))),
+                    spiritual: Math.max(1, Math.min(10, val + 1))
+                }));
+
+                return { lifePath, soulNumber, personalityNumber, destinyNumber, personalYear, zodiac, ascendant, monthlyEnergy, fullNameAfter };
+            }, [formData]);
+
+            const personalYearMeanings = {
+                1: { title: 'Год Новых Начинаний', energy: 'Год новых начинаний и возможностей!', themes: ['Новые проекты', 'Инициатива'], advice: 'Смело начинайте новое!', career: 'Отличное время для смены работы.', love: 'Новые знакомства благоприятны.', finance: 'Инвестируйте в себя.', health: 'Начните новую программу здоровья.', peakMonths: ['Январь', 'Май', 'Октябрь'], cautionMonths: ['Март', 'Август'] },
+                2: { title: 'Год Партнерства', energy: 'Год терпения и сотрудничества.', themes: ['Партнерство', 'Дипломатия'], advice: 'Работайте в команде.', career: 'Партнерства полезны.', love: 'Лучший год для брака.', finance: 'Совместные проекты.', health: 'Эмоциональный баланс важен.', peakMonths: ['Февраль', 'Июнь', 'Ноябрь'], cautionMonths: ['Апрель', 'Сентябрь'] },
+                3: { title: 'Год Творчества', energy: 'Год самовыражения!', themes: ['Творчество', 'Общение'], advice: 'Выражайте себя!', career: 'Творческие профессии.', love: 'Романтика и флирт.', finance: 'Доходы через творчество.', health: 'Энергия на высоте!', peakMonths: ['Март', 'Июль', 'Декабрь'], cautionMonths: ['Май', 'Октябрь'] },
+                4: { title: 'Год Труда', energy: 'Год упорного труда.', themes: ['Стабильность', 'Труд'], advice: 'Работайте усердно.', career: 'Укрепление позиций.', love: 'Серьезные отношения.', finance: 'Консервативный подход.', health: 'Следите за суставами.', peakMonths: ['Апрель', 'Август', 'Ноябрь'], cautionMonths: ['Февраль', 'Июль'] },
+                5: { title: 'Год Перемен', energy: 'Год неожиданных изменений!', themes: ['Перемены', 'Свобода'], advice: 'Будьте гибкими!', career: 'Смена работы возможна.', love: 'Новые приключения.', finance: 'Переменчивые доходы.', health: 'Высокая активность.', peakMonths: ['Май', 'Сентябрь', 'Декабрь'], cautionMonths: ['Март', 'Август'] },
+                6: { title: 'Год Ответственности', energy: 'Год семьи и заботы.', themes: ['Семья', 'Забота'], advice: 'Уделяйте внимание дому.', career: 'Работа с людьми.', love: 'Лучший год для семьи.', finance: 'Траты на дом.', health: 'Баланс важен.', peakMonths: ['Июнь', 'Сентябрь', 'Декабрь'], cautionMonths: ['Апрель', 'Октябрь'] },
+                7: { title: 'Год Духовности', energy: 'Год самопознания.', themes: ['Духовность', 'Анализ'], advice: 'Углубитесь в себя.', career: 'Исследования, обучение.', love: 'Углубление связей.', finance: 'Инвестиции в образование.', health: 'Медитация важна.', peakMonths: ['Январь', 'Июль', 'Ноябрь'], cautionMonths: ['Май', 'Сентябрь'] },
+                8: { title: 'Год Власти', energy: 'Год материального успеха!', themes: ['Успех', 'Власть'], advice: 'Стремитесь к вершинам!', career: 'Продвижение возможно.', love: 'Баланс с карьерой.', finance: 'Отличный год!', health: 'Стресс возможен.', peakMonths: ['Январь', 'Май', 'Октябрь'], cautionMonths: ['Март', 'Август'] },
+                9: { title: 'Год Завершения', energy: 'Год завершения цикла.', themes: ['Завершение', 'Мудрость'], advice: 'Завершайте начатое.', career: 'Завершение проектов.', love: 'Прощение важно.', finance: 'Завершение циклов.', health: 'Детоксикация.', peakMonths: ['Март', 'Сентябрь', 'Декабрь'], cautionMonths: ['Январь', 'Август'] }
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (formData.birthDate && formData.firstName) {
+                    setShowResults(true);
+                    setActiveTab('overview');
+                }
+            };
+
+            if (!showResults) {
+                return (
+                    <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #312e81, #7e22ce, #be185d)', color: 'white', padding: '24px'}}>
+                        <div style={{maxWidth: '768px', margin: '0 auto'}}>
+                            <div style={{textAlign: 'center', marginBottom: '32px'}}>
+                                <h1 style={{fontSize: '48px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px'}}>
+                                    <Sparkles /> Калькулятор Судьбы 2026 <Sparkles />
+                                </h1>
+                                <p style={{fontSize: '20px', color: '#e9d5ff'}}>Нумерология и Астрология</p>
+                            </div>
+
+                            <form onSubmit={handleSubmit} style={{background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)', borderRadius: '16px', padding: '32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'}}>
+                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '24px'}}>
+                                    <div>
+                                        <label style={{display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px'}}>
+                                            <User /> Имя *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={formData.firstName}
+                                            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                                            style={{width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '8px', color: 'white'}}
+                                            placeholder="Надежда"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style={{display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px'}}>Отчество</label>
+                                        <input
+                                            type="text"
+                                            value={formData.middleName}
+                                            onChange={(e) => setFormData({...formData, middleName: e.target.value})}
+                                            style={{width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '8px', color: 'white'}}
+                                            placeholder="Сергеевна"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style={{display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px'}}>Фамилия до брака</label>
+                                        <input
+                                            type="text"
+                                            value={formData.lastNameBefore}
+                                            onChange={(e) => setFormData({...formData, lastNameBefore: e.target.value})}
+                                            style={{width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '8px', color: 'white'}}
+                                            placeholder="Кириченко"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style={{display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px'}}>Фамилия после брака</label>
+                                        <input
+                                            type="text"
+                                            value={formData.lastNameAfter}
+                                            onChange={(e) => setFormData({...formData, lastNameAfter: e.target.value})}
+                                            style={{width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '8px', color: 'white'}}
+                                            placeholder="Майдурова"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style={{display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px'}}>
+                                            <Calendar /> Дата рождения *
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={formData.birthDate}
+                                            onChange={(e) => setFormData({...formData, birthDate: e.target.value})}
+                                            style={{width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '8px', color: 'white'}}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style={{display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px'}}>
+                                            <Clock /> Время рождения
+                                        </label>
+                                        <input
+                                            type="time"
+                                            value={formData.birthTime}
+                                            onChange={(e) => setFormData({...formData, birthTime: e.target.value})}
+                                            style={{width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '8px', color: 'white'}}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div style={{marginBottom: '24px'}}>
+                                    <label style={{display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px'}}>
+                                        <MapPin /> Место рождения
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.birthPlace}
+                                        onChange={(e) => setFormData({...formData, birthPlace: e.target.value})}
+                                        style={{width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '8px', color: 'white'}}
+                                        placeholder="Город, страна"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    style={{width: '100%', background: 'linear-gradient(to right, #9333ea, #db2777)', color: 'white', fontWeight: 'bold', padding: '16px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '16px'}}
+                                >
+                                    Рассчитать прогноз на 2026 год ✨
+                                </button>
+
+                                <p style={{fontSize: '12px', textAlign: 'center', color: '#e9d5ff', marginTop: '16px'}}>
+                                    * Обязательные поля
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                );
+            }
+
+            const calc = calculations;
+            const personalYearInfo = personalYearMeanings[calc.personalYear] || personalYearMeanings[1];
+
+            return (
+                <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #7e22ce, #db2777, #4338ca)', color: 'white', padding: '24px'}}>
+                    <div style={{maxWidth: '1200px', margin: '0 auto'}}>
+                        <div style={{textAlign: 'center', marginBottom: '32px'}}>
+                            <h1 style={{fontSize: '36px', fontWeight: 'bold', marginBottom: '8px'}}>
+                                <Sparkles /> Ваш Прогноз на 2026 год <Sparkles />
+                            </h1>
+                            <p style={{fontSize: '20px', color: '#e9d5ff'}}>{calc.fullNameAfter}</p>
+                            <p style={{fontSize: '16px', color: '#ddd6fe'}}>
+                                {new Date(formData.birthDate).toLocaleDateString('ru-RU')}
+                            </p>
+                            <div style={{display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '16px', flexWrap: 'wrap'}}>
+                                <span style={{background: 'rgba(219,39,119,0.5)', padding: '8px 16px', borderRadius: '999px'}}>
+                                    Персональный год: {calc.personalYear}
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => {setShowResults(false); setFormData({firstName: '', middleName: '', lastNameBefore: '', lastNameAfter: '', birthDate: '', birthTime: '', birthPlace: ''})}}
+                                style={{marginTop: '16px', background: 'rgba(255,255,255,0.2)', padding: '8px 24px', borderRadius: '8px', border: 'none', color: 'white', cursor: 'pointer'}}
+                            >
+                                Новый расчет
+                            </button>
+                        </div>
+
+                        <div style={{display: 'flex', gap: '8px', marginBottom: '24px', justifyContent: 'center', flexWrap: 'wrap'}}>
+                            {[
+                                { id: 'overview', label: 'Обзор' },
+                                { id: 'numbers', label: 'Числа' },
+                                { id: 'monthly', label: 'По месяцам' },
+                                { id: 'advice', label: 'Советы' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    style={{
+                                        padding: '12px 24px',
+                                        borderRadius: '8px',
+                                        fontWeight: '600',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: activeTab === tab.id ? 'white' : 'rgba(147,51,234,0.5)',
+                                        color: activeTab === tab.id ? '#7e22ce' : 'white',
+                                        transition: 'all 0.3s'
+                                    }}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div style={{background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)', borderRadius: '16px', padding: '24px'}}>
+                            {activeTab === 'overview' && (
+                                <div>
+                                    <div style={{background: 'linear-gradient(to right, rgba(251,191,36,0.2), rgba(249,115,22,0.2))', padding: '24px', borderRadius: '12px', border: '2px solid rgba(251,191,36,0.5)', marginBottom: '24px'}}>
+                                        <h2 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '16px'}}>
+                                            ✨ {personalYearInfo.title}
+                                        </h2>
+                                        <p style={{fontSize: '20px', lineHeight: '1.6', marginBottom: '16px'}}>
+                                            {personalYearInfo.energy}
+                                        </p>
+                                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px'}}>
+                                            <div style={{background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px'}}>
+                                                <h4 style={{fontWeight: 'bold', marginBottom: '8px'}}>Ключевые темы:</h4>
+                                                <ul style={{marginLeft: '20px'}}>
+                                                    {personalYearInfo.themes.map((theme, i) => (
+                                                        <li key={i}>{theme}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            <div style={{background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px'}}>
+                                                <h4 style={{fontWeight: 'bold', marginBottom: '8px'}}>Главный совет:</h4>
+                                                <p style={{fontSize: '14px'}}>{personalYearInfo.advice}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h3 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '16px'}}>Энергии года по месяцам</h3>
+                                    <ResponsiveContainer width="100%" height={400}>
+                                        <LineChart data={calc.monthlyEnergy}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.3)" />
+                                            <XAxis dataKey="month" stroke="#fff" />
+                                            <YAxis stroke="#fff" domain={[0, 10]} />
+                                            <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }} />
+                                            <Legend />
+                                            <Line type="monotone" dataKey="personal" stroke="#8B5CF6" strokeWidth={3} name="Личное" />
+                                            <Line type="monotone" dataKey="career" stroke="#F59E0B" strokeWidth={3} name="Карьера" />
+                                            <Line type="monotone" dataKey="love" stroke="#EC4899" strokeWidth={3} name="Любовь" />
+                                            <Line type="monotone" dataKey="finance" stroke="#10B981" strokeWidth={3} name="Финансы" />
+                                            <Line type="monotone" dataKey="spiritual" stroke="#3B82F6" strokeWidth={3} name="Духовность" />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+
+                                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '24px'}}>
+                                        <div style={{background: 'rgba(16,185,129,0.3)', padding: '16px', borderRadius: '8px'}}>
+                                            <h4 style={{fontWeight: 'bold', fontSize: '18px', marginBottom: '8px'}}>📈 Пиковые месяцы</h4>
+                                            <ul style={{marginLeft: '20px'}}>
+                                                {personalYearInfo.peakMonths.map((m, i) => <li key={i}>{m}</li>)}
+                                            </ul>
+                                        </div>
+                                        <div style={{background: 'rgba(239,68,68,0.3)', padding: '16px', borderRadius: '8px'}}>
+                                            <h4 style={{fontWeight: 'bold', fontSize: '18px', marginBottom: '8px'}}>⚠️ Месяцы осторожности</h4>
+                                            <ul style={{marginLeft: '20px'}}>
+                                                {personalYearInfo.cautionMonths.map((m, i) => <li key={i}>{m}</li>)}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'numbers' && (
+                                <div>
+                                    <h2 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '24px'}}>Ваши Нумерологические Числа</h2>
+                                    
+                                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px'}}>
+                                        <div style={{background: 'linear-gradient(to bottom right, rgba(147,51,234,0.3), rgba(79,70,229,0.3))', padding: '24px', borderRadius: '12px', border: '2px solid rgba(147,51,234,0.5)'}}>
+                                            <h3 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '12px'}}>Число Жизненного Пути: {calc.lifePath}</h3>
+                                            <p style={{fontSize: '16px', marginBottom: '8px', color: '#e9d5ff'}}>Ваша главная миссия</p>
+                                        </div>
+
+                                        <div style={{background: 'linear-gradient(to bottom right, rgba(219,39,119,0.3), rgba(225,29,72,0.3))', padding: '24px', borderRadius: '12px', border: '2px solid rgba(219,39,119,0.5)'}}>
+                                            <h3 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '12px'}}>Число Души: {calc.soulNumber}</h3>
+                                            <p style={{fontSize: '16px', marginBottom: '8px', color: '#fce7f3'}}>Ваши желания</p>
+                                        </div>
+
+                                        <div style={{background: 'linear-gradient(to bottom right, rgba(245,158,11,0.3), rgba(251,191,36,0.3))', padding: '24px', borderRadius: '12px', border: '2px solid rgba(245,158,11,0.5)'}}>
+                                            <h3 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '12px'}}>Число Личности: {calc.personalityNumber}</h3>
+                                            <p style={{fontSize: '16px', marginBottom: '8px', color: '#fef3c7'}}>Как вас видят</p>
+                                        </div>
+
+                                        <div style={{background: 'linear-gradient(to bottom right, rgba(59,130,246,0.3), rgba(14,165,233,0.3))', padding: '24px', borderRadius: '12px', border: '2px solid rgba(59,130,246,0.5)'}}>
+                                            <h3 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '12px'}}>Число Судьбы: {calc.destinyNumber}</h3>
+                                            <p style={{fontSize: '16px', marginBottom: '8px', color: '#dbeafe'}}>Ваше предназначение</p>
+                                        </div>
+                                    </div>
+
+                                    <div style={{background: 'linear-gradient(to right, rgba(139,92,246,0.3), rgba(168,85,247,0.3))', padding: '32px', borderRadius: '12px', border: '2px solid rgba(139,92,246,0.5)', marginTop: '24px'}}>
+                                        <h3 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '16px'}}>Персональный Год 2026: {calc.personalYear}</h3>
+                                        <p style={{fontSize: '20px', fontWeight: '600', color: '#ede9fe', marginBottom: '12px'}}>{personalYearInfo.title}</p>
+                                        <p style={{fontSize: '18px', lineHeight: '1.6'}}>{personalYearInfo.energy}</p>
+                                    </div>
+
+                                    <div style={{background: 'linear-gradient(to right, rgba(16,185,129,0.3), rgba(20,184,166,0.3))', padding: '24px', borderRadius: '12px', marginTop: '24px'}}>
+                                        <h3 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '16px'}}>Счастливые Числа 2026</h3>
+                                        <div style={{display: 'flex', gap: '12px', flexWrap: 'wrap'}}>
+                                            {[calc.personalYear, calc.lifePath, calc.soulNumber].filter((n, i, arr) => arr.indexOf(n) === i).map(num => (
+                                                <div key={num} style={{background: 'rgba(255,255,255,0.2)', padding: '16px 24px', borderRadius: '8px', fontSize: '24px', fontWeight: 'bold'}}>
+                                                    {num}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div style={{marginTop: '24px', padding: '24px', background: 'rgba(139,92,246,0.2)', borderRadius: '12px'}}>
+                                        <h3 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '12px'}}>🔮 Астрология</h3>
+                                        <p style={{fontSize: '18px', marginBottom: '8px'}}>
+                                            <strong>Знак Зодиака:</strong> {calc.zodiac.symbol} {calc.zodiac.name} ({calc.zodiac.element})
+                                        </p>
+                                        <p style={{fontSize: '18px'}}>
+                                            <strong>Асцендент:</strong> {calc.ascendant.symbol} {calc.ascendant.name}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'monthly' && (
+                                <div>
+                                    <h2 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '24px'}}>Прогноз по месяцам 2026</h2>
+                                    
+                                    {calc.monthlyEnergy.map((month, index) => {
+                                        const avgEnergy = Math.round((month.personal + month.career + month.love + month.finance + month.health + month.spiritual) / 6);
+                                        const color = avgEnergy >= 8 ? '#10B981' : avgEnergy >= 6 ? '#F59E0B' : '#EF4444';
+                                        
+                                        return (
+                                            <div key={month.month} style={{background: 'linear-gradient(to right, rgba(147,51,234,0.4), rgba(219,39,119,0.4))', padding: '20px', borderRadius: '12px', borderLeft: `4px solid ${color}`, marginBottom: '16px'}}>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap'}}>
+                                                    <h3 style={{fontSize: '20px', fontWeight: 'bold'}}>{month.month} 2026</h3>
+                                                    <span style={{fontSize: '14px', background: 'rgba(255,255,255,0.2)', padding: '4px 12px', borderRadius: '999px'}}>
+                                                        Энергия: {avgEnergy}/10
+                                                    </span>
+                                                </div>
+                                                
+                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', fontSize: '14px'}}>
+                                                    <div style={{background: 'rgba(139,92,246,0.3)', padding: '8px', borderRadius: '6px'}}>
+                                                        Личное: <strong>{month.personal}/10</strong>
+                                                    </div>
+                                                    <div style={{background: 'rgba(245,158,11,0.3)', padding: '8px', borderRadius: '6px'}}>
+                                                        Карьера: <strong>{month.career}/10</strong>
+                                                    </div>
+                                                    <div style={{background: 'rgba(236,72,153,0.3)', padding: '8px', borderRadius: '6px'}}>
+                                                        Любовь: <strong>{month.love}/10</strong>
+                                                    </div>
+                                                    <div style={{background: 'rgba(16,185,129,0.3)', padding: '8px', borderRadius: '6px'}}>
+                                                        Финансы: <strong>{month.finance}/10</strong>
+                                                    </div>
+                                                    <div style={{background: 'rgba(239,68,68,0.3)', padding: '8px', borderRadius: '6px'}}>
+                                                        Здоровье: <strong>{month.health}/10</strong>
+                                                    </div>
+                                                    <div style={{background: 'rgba(59,130,246,0.3)', padding: '8px', borderRadius: '6px'}}>
+                                                        Духовность: <strong>{month.spiritual}/10</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {activeTab === 'advice' && (
+                                <div>
+                                    <h2 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '24px'}}>Рекомендации на 2026 год</h2>
+                                    
+                                    <div style={{marginBottom: '24px'}}>
+                                        <div style={{background: 'linear-gradient(to right, rgba(147,51,234,0.3), rgba(79,70,229,0.3))', padding: '24px', borderRadius: '12px', marginBottom: '16px'}}>
+                                            <h3 style={{fontSize: '22px', fontWeight: 'bold', marginBottom: '12px'}}>💼 Карьера и Работа</h3>
+                                            <p style={{fontSize: '18px', lineHeight: '1.6'}}>{personalYearInfo.career}</p>
+                                        </div>
+
+                                        <div style={{background: 'linear-gradient(to right, rgba(219,39,119,0.3), rgba(225,29,72,0.3))', padding: '24px', borderRadius: '12px', marginBottom: '16px'}}>
+                                            <h3 style={{fontSize: '22px', fontWeight: 'bold', marginBottom: '12px'}}>❤️ Личные Отношения</h3>
+                                            <p style={{fontSize: '18px', lineHeight: '1.6'}}>{personalYearInfo.love}</p>
+                                        </div>
+
+                                        <div style={{background: 'linear-gradient(to right, rgba(16,185,129,0.3), rgba(5,150,105,0.3))', padding: '24px', borderRadius: '12px', marginBottom: '16px'}}>
+                                            <h3 style={{fontSize: '22px', fontWeight: 'bold', marginBottom: '12px'}}>💰 Финансы</h3>
+                                            <p style={{fontSize: '18px', lineHeight: '1.6'}}>{personalYearInfo.finance}</p>
+                                        </div>
+
+                                        <div style={{background: 'linear-gradient(to right, rgba(59,130,246,0.3), rgba(37,99,235,0.3))', padding: '24px', borderRadius: '12px', marginBottom: '16px'}}>
+                                            <h3 style={{fontSize: '22px', fontWeight: 'bold', marginBottom: '12px'}}>🏥 Здоровье</h3>
+                                            <p style={{fontSize: '18px', lineHeight: '1.6', marginBottom: '12px'}}>{personalYearInfo.health}</p>
+                                            <div style={{background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px'}}>
+                                                <h4 style={{fontWeight: 'bold', marginBottom: '8px'}}>По знаку Зодиака ({calc.zodiac.name}):</h4>
+                                                <p style={{fontSize: '14px'}}>
+                                                    {calc.zodiac.name === 'Овен' && 'Следите за головой, давлением. Избегайте импульсивных физических нагрузок.'}
+                                                    {calc.zodiac.name === 'Телец' && 'Внимание на горло, шею, щитовидную железу.'}
+                                                    {calc.zodiac.name === 'Близнецы' && 'Дыхательная система, нервы требуют внимания.'}
+                                                    {calc.zodiac.name === 'Рак' && 'Пищеварение, желудок, эмоциональное здоровье важны.'}
+                                                    {calc.zodiac.name === 'Лев' && 'Сердце, спина, позвоночник - ваши уязвимые зоны.'}
+                                                    {calc.zodiac.name === 'Дева' && 'Кишечник, пищеварение требуют внимания.'}
+                                                    {calc.zodiac.name === 'Весы' && 'Почки, поясница, баланс жидкостей.'}
+                                                    {calc.zodiac.name === 'Скорпион' && 'Репродуктивная система.'}
+                                                    {calc.zodiac.name === 'Стрелец' && 'Печень, бедра.'}
+                                                    {calc.zodiac.name === 'Козерог' && 'Кости, суставы, колени.'}
+                                                    {calc.zodiac.name === 'Водолей' && 'Икры, лодыжки, кровообращение.'}
+                                                    {calc.zodiac.name === 'Рыбы' && 'Стопы, лимфатическая система.'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style={{background: 'linear-gradient(to right, rgba(251,191,36,0.3), rgba(245,158,11,0.3))', padding: '24px', borderRadius: '12px'}}>
+                                        <h3 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '16px'}}>💫 Итоговые Выводы</h3>
+                                        <div style={{fontSize: '18px', lineHeight: '1.8'}}>
+                                            <p style={{marginBottom: '12px'}}>
+                                                <strong>2026 год для вас - это {personalYearInfo.title.toLowerCase()}.</strong> {personalYearInfo.energy}
+                                            </p>
+                                            <p style={{marginBottom: '12px'}}>
+                                                Ваше число жизненного пути <strong>{calc.lifePath}</strong> в сочетании с персональным годом <strong>{calc.personalYear}</strong> создает уникальную энергию.
+                                            </p>
+                                            <p style={{marginBottom: '12px'}}>
+                                                Как {calc.zodiac.symbol} <strong>{calc.zodiac.name}</strong> с асцендентом в {calc.ascendant.symbol} <strong>{calc.ascendant.name}</strong>, вы обладаете особой силой!
+                                            </p>
+                                            <p style={{color: '#fef3c7', fontWeight: '600'}}>
+                                                Главное правило года: {personalYearInfo.advice}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div style={{background: 'linear-gradient(to right, rgba(168,85,247,0.3), rgba(236,72,153,0.3))', padding: '24px', borderRadius: '12px', textAlign: 'center', marginTop: '24px'}}>
+                                        <div style={{fontSize: '48px', marginBottom: '16px'}}>✨</div>
+                                        <h3 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '12px'}}>Помните</h3>
+                                        <p style={{fontSize: '18px', lineHeight: '1.6'}}>
+                                            Нумерология и астрология - это карта, но вы - навигатор своей судьбы. 
+                                            Используйте эту информацию как руководство, но всегда доверяйте своей интуиции!
+                                        </p>
+                                        <p style={{marginTop: '16px', fontSize: '24px', fontWeight: 'bold', color: '#fef3c7'}}>
+                                            Счастливого 2026 года! 🌟
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{textAlign: 'center', marginTop: '32px'}}>
+                            <button
+                                onClick={() => window.print()}
+                                style={{background: 'rgba(255,255,255,0.2)', padding: '12px 32px', borderRadius: '8px', fontWeight: '600', border: 'none', color: 'white', cursor: 'pointer', fontSize: '16px', display: 'inline-flex', alignItems: 'center', gap: '8px'}}
+                            >
+                                <Download /> Сохранить прогноз (Печать)
+                            </button>
+                            <p style={{fontSize: '14px', color: '#e9d5ff', marginTop: '16px'}}>
+                                💜 Поделитесь этим калькулятором с друзьями!
+                            </p>
+                        </div>
+
+                        <div style={{textAlign: 'center', marginTop: '32px', color: '#e9d5ff', fontSize: '12px'}}>
+                            <p>Калькулятор Судьбы 2026 • Нумерология & Астрология</p>
+                            <p style={{marginTop: '8px'}}>Создано с помощью Claude AI</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<NumerologyCalculator />, document.getElementById('root'));
+    </script>
+</body>
+</html>d: 'rgba(147,51,234,0.5)', padding: '8px 16px', borderRadius: '999px'}}>
+                                    {calc.zodiac.symbol} {calc.zodiac.name}
+                                </span>
+                                <span style={{backgroun
