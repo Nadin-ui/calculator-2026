@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Судьбы 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { 
+            text-align: center; 
+            color: #667eea; 
+            font-size: 2.5em; 
+            margin-bottom: 10px;
+        }
+        .subtitle { 
+            text-align: center; 
+            color: #666; 
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600;
+            color: #333;
+        }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: #667eea; 
+        }
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; 
+        }
+        button { 
+            width: 100%; 
+            padding: 16px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        button:hover { 
+            transform: translateY(-2px); 
+        }
+        .hidden { 
+            display: none; 
+        }
+        .results { 
+            margin-top: 40px; 
+        }
+        .card { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .card h2 { 
+            font-size: 2em; 
+            margin-bottom: 15px; 
+        }
+        .card p { 
+            font-size: 1.1em; 
+            line-height: 1.6; 
+        }
+        .tabs { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tab { 
+            padding: 12px 24px; 
+            background: #f0f0f0; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .tab.active { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+        }
+        .tab:hover { 
+            background: #e0e0e0; 
+        }
+        .tab.active:hover { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        }
+        .number-box { 
+            background: white; 
+            color: #333; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .number-box h3 { 
+            color: #667eea; 
+            margin-bottom: 10px; 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; 
+        }
+        .month-card { 
+            background: white; 
+            color: #333; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 15px;
+            border-left: 5px solid;
+        }
+        .month-card.high { border-left-color: #10b981; }
+        .month-card.medium { border-left-color: #f59e0b; }
+        .month-card.low { border-left-color: #ef4444; }
+        .energy-bar { 
+            background: #e0e0e0; 
+            height: 10px; 
+            border-radius: 5px; 
+            overflow: hidden; 
+            margin: 8px 0;
+        }
+        .energy-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); 
+            transition: width 0.5s;
+        }
+        .info-box { 
+            background: rgba(255,255,255,0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 15px 0;
+        }
+        .badge { 
+            display: inline-block; 
+            padding: 8px 16px; 
+            background: rgba(255,255,255,0.2); 
+            border-radius: 20px; 
+            margin: 5px;
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 1.8em; }
+            .form-grid, .grid { grid-template-columns: 1fr; }
+        }
+        @media print {
+            button { display: none !important; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Калькулятор Судьбы 2026 ✨</h1>
+        <p class="subtitle">Нумерология и Астрология</p>
+
+        <!-- ФОРМА -->
+        <div id="form-section">
+            <form id="calculator-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>👤 Имя *</label>
+                        <input type="text" id="firstName" placeholder="Надежда" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Отчество</label>
+                        <input type="text" id="middleName" placeholder="Сергеевна">
+                    </div>
+                    <div class="form-group">
+                        <label>Фамилия до брака</label>
+                        <input type="text" id="lastNameBefore" placeholder="Иванова">
+                    </div>
+                    <div class="form-group">
+                        <label>Фамилия после брака</label>
+                        <input type="text" id="lastNameAfter" placeholder="Петрова">
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Дата рождения *</label>
+                        <input type="date" id="birthDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🕐 Время рождения</label>
+                        <input type="time" id="birthTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📍 Место рождения</label>
+                    <input type="text" id="birthPlace" placeholder="Москва, Россия">
+                </div>
+                <button type="submit">Рассчитать прогноз на 2026 год</button>
+            </form>
+        </div>
+
+        <!-- РЕЗУЛЬТАТЫ -->
+        <div id="results-section" class="hidden">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('overview')">Обзор</button>
+                <button class="tab" onclick="showTab('numbers')">Числа</button>
+                <button class="tab" onclick="showTab('monthly')">По месяцам</button>
+                <button class="tab" onclick="showTab('advice')">Советы</button>
+            </div>
+
+            <div id="overview" class="tab-content">
+                <div class="card">
+                    <h2 id="result-title"></h2>
+                    <p id="result-name"></p>
+                    <p id="result-birth"></p>
+                    <div id="result-badges"></div>
+                    <button onclick="resetForm()" style="max-width: 300px; margin-top: 20px;">Новый расчет</button>
+                </div>
+                <div id="overview-content"></div>
+            </div>
+
+            <div id="numbers" class="tab-content hidden">
+                <div id="numbers-content"></div>
+            </div>
+
+            <div id="monthly" class="tab-content hidden">
+                <div id="monthly-content"></div>
+            </div>
+
+            <div id="advice" class="tab-content hidden">
+                <div id="advice-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Нумерологическая таблица
+        const letterValues = {
+            'А':1,'Б':2,'В':3,'Г':4,'Д':5,'Е':6,'Ё':6,'Ж':7,'З':8,'И':9,'Й':1,
+            'К':2,'Л':3,'М':4,'Н':5,'О':6,'П':7,'Р':8,'С':9,'Т':1,'У':2,'Ф':3,
+            'Х':4,'Ц':5,'Ч':6,'Ш':7,'Щ':8,'Ы':9,'Ь':1,'Ъ':1,'Э':6,'Ю':7,'Я':8,
+            'A':1,'B':2,'C':3,'D':4,'E':5,'F':6,'G':7,'H':8,'I':9,'J':1,
+            'K':2,'L':3,'M':4,'N':5,'O':6,'P':7,'Q':8,'R':9,'S':1,'T':2,'U':3,
+            'V':4,'W':5,'X':6,'Y':7,'Z':8
+        };
+        const vowels = ['А','Е','Ё','И','О','У','Ы','Э','Ю','Я','A','E','I','O','U','Y'];
+
+        const personalYearData = {
+            1: {title:'Год Новых Начинаний',energy:'Год новых начинаний и возможностей!',themes:['Новые проекты','Инициатива'],advice:'Смело начинайте новое!',career:'Отличное время для смены работы.',love:'Новые знакомства благоприятны.',finance:'Инвестируйте в себя.',health:'Начните новую программу здоровья.',peakMonths:['Январь','Май','Октябрь']},
+            2: {title:'Год Партнерства',energy:'Год терпения и сотрудничества.',themes:['Партнерство','Дипломатия'],advice:'Работайте в команде.',career:'Партнерства полезны.',love:'Лучший год для брака.',finance:'Совместные проекты.',health:'Эмоциональный баланс важен.',peakMonths:['Февраль','Июнь','Ноябрь']},
+            3: {title:'Год Творчества',energy:'Год самовыражения!',themes:['Творчество','Общение'],advice:'Выражайте себя!',career:'Творческие профессии.',love:'Романтика и флирт.',finance:'Доходы через творчество.',health:'Энергия на высоте!',peakMonths:['Март','Июль','Декабрь']},
+            4: {title:'Год Труда',energy:'Год упорного труда.',themes:['Стабильность','Труд'],advice:'Работайте усердно.',career:'Укрепление позиций.',love:'Серьезные отношения.',finance:'Консервативный подход.',health:'Следите за суставами.',peakMonths:['Апрель','Август','Ноябрь']},
+            5: {title:'Год Перемен',energy:'Год неожиданных изменений!',themes:['Перемены','Свобода'],advice:'Будьте гибкими!',career:'Смена работы возможна.',love:'Новые приключения.',finance:'Переменчивые доходы.',health:'Высокая активность.',peakMonths:['Май','Сентябрь','Декабрь']},
+            6: {title:'Год Ответственности',energy:'Год семьи и заботы.',themes:['Семья','Забота'],advice:'Уделяйте внимание дому.',career:'Работа с людьми.',love:'Лучший год для семьи.',finance:'Траты на дом.',health:'Баланс важен.',peakMonths:['Июнь','Сентябрь','Декабрь']},
+            7: {title:'Год Духовности',energy:'Год самопознания.',themes:['Духовность','Анализ'],advice:'Углубитесь в себя.',career:'Исследования, обучение.',love:'Углубление связей.',finance:'Инвестиции в образование.',health:'Медитация важна.',peakMonths:['Январь','Июль','Ноябрь']},
+            8: {title:'Год Власти',energy:'Год материального успеха!',themes:['Успех','Власть'],advice:'Стремитесь к вершинам!',career:'Продвижение возможно.',love:'Баланс с карьерой.',finance:'Отличный год!',health:'Стресс возможен.',peakMonths:['Январь','Май','Октябрь']},
+            9: {title:'Год Завершения',energy:'Год завершения цикла.',themes:['Завершение','Мудрость'],advice:'Завершайте начатое.',career:'Завершение проектов.',love:'Прощение важно.',finance:'Завершение циклов.',health:'Детоксикация.',peakMonths:['Март','Сентябрь','Декабрь']}
+        };
+
+        const zodiacSigns = [
+            {name:'Овен',symbol:'♈',start:[3,21],end:[4,19],element:'Огонь',health:'Голова, давление'},
+            {name:'Телец',symbol:'♉',start:[4,20],end:[5,20],element:'Земля',health:'Горло, шея'},
+            {name:'Близнецы',symbol:'♊',start:[5,21],end:[6,20],element:'Воздух',health:'Дыхательная система'},
+            {name:'Рак',symbol:'♋',start:[6,21],end:[7,22],element:'Вода',health:'Пищеварение, желудок'},
+            {name:'Лев',symbol:'♌',start:[7,23],end:[8,22],element:'Огонь',health:'Сердце, спина'},
+            {name:'Дева',symbol:'♍',start:[8,23],end:[9,22],element:'Земля',health:'Кишечник'},
+            {name:'Весы',symbol:'♎',start:[9,23],end:[10,22],element:'Воздух',health:'Почки, поясница'},
+            {name:'Скорпион',symbol:'♏',start:[10,23],end:[11,21],element:'Вода',health:'Репродуктивная система'},
+            {name:'Стрелец',symbol:'♐',start:[11,22],end:[12,21],element:'Огонь',health:'Печень, бедра'},
+            {name:'Козерог',symbol:'♑',start:[12,22],end:[1,19],element:'Земля',health:'Кости, суставы'},
+            {name:'Водолей',symbol:'♒',start:[1,20],end:[2,18],element:'Воздух',health:'Икры, кровообращение'},
+            {name:'Рыбы',symbol:'♓',start:[2,19],end:[3,20],element:'Вода',health:'Стопы, лимфа'}
+        ];
+
+        function calculateNumber(str) {
+            if(!str) return 0;
+            let sum = 0;
+            for(let char of str.toUpperCase()) {
+                if(letterValues[char]) sum += letterValues[char];
+            }
+            while(sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+                sum = sum.toString().split('').reduce((a,b) => parseInt(a)+parseInt(b),0);
+            }
+            return sum;
+        }
+
+        function calculateSoulNumber(name) {
+            let filtered = name.toUpperCase().split('').filter(c => vowels.includes(c)).join('');
+            return calculateNumber(filtered);
+        }
+
+        function calculatePersonalityNumber(name) {
+            let filtered = name.toUpperCase().split('').filter(c => letterValues[c] && !vowels.includes(c)).join('');
+            return calculateNumber(filtered);
+        }
+
+        function calculateLifePath(date) {
+            if(!date) return 0;
+            let sum = date.split('-').join('').split('').reduce((a,b) => parseInt(a)+parseInt(b),0);
+            while(sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+                sum = sum.toString().split('').reduce((a,b) => parseInt(a)+parseInt(b),0);
+            }
+            return sum;
+        }
+
+        function calculatePersonalYear(date) {
+            if(!date) return 0;
+            const [year, month, day] = date.split('-');
+            let sum = parseInt(day) + parseInt(month) + 2026;
+            while(sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+                sum = sum.toString().split('').reduce((a,b) => parseInt(a)+parseInt(b),0);
+            }
+            return sum;
+        }
+
+        function getZodiacSign(date) {
+            if(!date) return zodiacSigns[0];
+            const [year, month, day] = date.split('-').map(Number);
+            for(let sign of zodiacSigns) {
+                if((month === sign.start[0] && day >= sign.start[1]) || 
+                   (month === sign.end[0] && day <= sign.end[1])) {
+                    return sign;
+                }
+            }
+            return zodiacSigns[0];
+        }
+
+        function getAscendant(time, zodiac) {
+            if(!time) return {name:'Неизвестен',symbol:'?'};
+            const hour = parseInt(time.split(':')[0]);
+            const ascendants = zodiacSigns.map(s => s.name);
+            const zodiacIndex = zodiacSigns.findIndex(s => s.name === zodiac.name);
+            const ascIndex = (zodiacIndex + Math.floor(hour/2)) % 12;
+            return {name:ascendants[ascIndex],symbol:zodiacSigns[ascIndex].symbol};
+        }
+
+        function generateMonthlyEnergy(personalYear) {
+            const base = {
+                1:[7,8,9,8,10,9,8,7,9,10,9,10],
+                2:[6,7,8,9,8,9,10,8,7,8,9,8],
+                3:[8,9,10,9,8,10,9,8,9,10,9,9],
+                4:[6,6,7,8,7,8,9,8,9,8,7,7],
+                5:[9,8,9,10,9,10,8,9,10,9,8,9],
+                6:[7,8,9,9,8,10,9,8,7,8,9,9],
+                7:[6,7,8,7,8,7,9,10,8,7,8,9],
+                8:[8,8,9,9,10,9,8,7,10,10,9,9],
+                9:[7,6,8,7,9,8,7,6,8,9,8,10]
+            };
+            const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+            const pattern = base[personalYear] || base[1];
+            return pattern.map((val,i) => ({
+                month: months[i],
+                personal: Math.max(1, Math.min(10, val)),
+                career: Math.max(1, Math.min(10, val + (i===4||i===9?1:-1))),
+                love: Math.max(1, Math.min(10, val-2+(i===5?2:0))),
+                finance: Math.max(1, Math.min(10, val+(i===8||i===9?2:0))),
+                health: Math.max(1, Math.min(10, val+(i===7?2:-1))),
+                spiritual: Math.max(1, Math.min(10, val+1))
+            }));
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.remove('hidden');
+        }
+
+        function resetForm() {
+            document.getElementById('form-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('calculator-form').reset();
+        }
+
+        document.getElementById('calculator-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value;
+            const middleName = document.getElementById('middleName').value;
+            const lastNameBefore = document.getElementById('lastNameBefore').value;
+            const lastNameAfter = document.getElementById('lastNameAfter').value || lastNameBefore;
+            const birthDate = document.getElementById('birthDate').value;
+            const birthTime = document.getElementById('birthTime').value;
+            const birthPlace = document.getElementById('birthPlace').value;
+
+            const fullName = `${lastNameAfter} ${firstName} ${middleName}`.trim();
+            const lifePath = calculateLifePath(birthDate);
+            const soulNumber = calculateSoulNumber(firstName);
+            const personalityNumber = calculatePersonalityNumber(firstName);
+            const destinyNumber = calculateNumber(fullName);
+            const personalYear = calculatePersonalYear(birthDate);
+            const zodiac = getZodiacSign(birthDate);
+            const ascendant = getAscendant(birthTime, zodiac);
+            const monthlyEnergy = generateMonthlyEnergy(personalYear);
+            const yearInfo = personalYearData[personalYear];
+
+            // Показать результаты
+            document.getElementById('form-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+
+            // Заголовок
+            document.getElementById('result-title').textContent = `✨ Ваш Прогноз на 2026 год ✨`;
+            document.getElementById('result-name').textContent = fullName;
+            document.getElementById('result-birth').textContent = new Date(birthDate).toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'}) + (birthPlace ? ` • ${birthPlace}` : '');
+            document.getElementById('result-badges').innerHTML = `
+                <span class="badge">${zodiac.symbol} ${zodiac.name}</span>
+                <span class="badge">Персональный год: ${personalYear}</span>
+            `;
+
+            // Обзор
+            document.getElementById('overview-content').innerHTML = `
+                <div class="card">
+                    <h2>${yearInfo.title}</h2>
+                    <p style="font-size:1.2em;margin-bottom:15px;">${yearInfo.energy}</p>
+                    <div class="info-box">
+                        <h3 style="margin-bottom:10px;">Ключевые темы года:</h3>
+                        <p>${yearInfo.themes.join(' • ')}</p>
+                    </div>
+                    <div class="info-box">
+                        <h3 style="margin-bottom:10px;">Главный совет:</h3>
+                        <p>${yearInfo.advice}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>Пиковые месяцы года</h2>
+                    <p style="font-size:1.1em;">${yearInfo.peakMonths.join(', ')}</p>
+                </div>
+            `;
+
+            // Числа
+            document.getElementById('numbers-content').innerHTML = `
+                <div class="number-box">
+                    <h3>Число Жизненного Пути: ${lifePath}</h3>
+                    <p>Ваша главная жизненная миссия и путь развития</p>
+                </div>
+                <div class="number-box">
+                    <h3>Число Души: ${soulNumber}</h3>
+                    <p>Ваши внутренние желания и мотивация</p>
+                </div>
+                <div class="number-box">
+                    <h3>Число Личности: ${personalityNumber}</h3>
+                    <p>Как вас воспринимают окружающие</p>
+                </div>
+                <div class="number-box">
+                    <h3>Число Судьбы: ${destinyNumber}</h3>
+                    <p>Ваше предназначение в этой жизни</p>
+                </div>
+                <div class="card">
+                    <h2>Персональный Год 2026: ${personalYear}</h2>
+                    <h3>${yearInfo.title}</h3>
+                    <p>${yearInfo.energy}</p>
+                </div>
+                <div class="card">
+                    <h2>Астрология</h2>
+                    <p><strong>Знак Зодиака:</strong> ${zodiac.symbol} ${zodiac.name} (${zodiac.element})</p>
+                    <p><strong>Асцендент:</strong> ${ascendant.symbol} ${ascendant.name}</p>
+                    <div class="info-box" style="margin-top:15px;">
+                        <strong>Здоровье по знаку:</strong> ${zodiac.health}
+                    </div>
+                </div>
+            `;
+
+            // По месяцам
+            let monthlyHTML = '<h2 style="color:#667eea;margin-bottom:20px;">Прогноз по месяцам 2026</h2>';
+            monthlyEnergy.forEach(m => {
+                const avg = Math.round((m.personal+m.career+m.love+m.finance+m.health+m.spiritual)/6);
+                const cls = avg>=8?'high':avg>=6?'medium':'low';
+                monthlyHTML += `
+                    <div class="month-card ${cls}">
+                        <h3>${m.month} 2026</h3>
+                        <p><strong>Общая энергия: ${avg}/10</strong></p>
+                        <div style="margin-top:10px;">
+                            <div style="display:flex;justify-content:space-between;margin:5px 0;">
+                                <span>Здоровье:</span><strong>${m.health}/10</strong>
+                            </div>
+                            <div class="energy-bar"><div class="energy-fill" style="width:${m.health*10}%"></div></div>
+                            <div style="display:flex;justify-content:space-between;margin:5px 0;">
+                                <span>Духовность:</span><strong>${m.spiritual}/10</strong>
+                            </div>
+                            <div class="energy-bar"><div class="energy-fill" style="width:${m.spiritual*10}%"></div></div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('monthly-content').innerHTML = monthlyHTML;
+
+            // Советы
+            document.getElementById('advice-content').innerHTML = `
+                <div class="card">
+                    <h2>💼 Карьера и Работа</h2>
+                    <p>${yearInfo.career}</p>
+                </div>
+                <div class="card">
+                    <h2>❤️ Личные Отношения</h2>
+                    <p>${yearInfo.love}</p>
+                </div>
+                <div class="card">
+                    <h2>💰 Финансы</h2>
+                    <p>${yearInfo.finance}</p>
+                </div>
+                <div class="card">
+                    <h2>🏥 Здоровье</h2>
+                    <p>${yearInfo.health}</p>
+                    <div class="info-box" style="margin-top:15px;">
+                        <strong>Рекомендации по знаку ${zodiac.name}:</strong><br>
+                        Особое внимание: ${zodiac.health}
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>💫 Итоговые Выводы</h2>
+                    <p style="font-size:1.1em;line-height:1.8;">
+                        <strong>2026 год для вас - это ${yearInfo.title.toLowerCase()}.</strong> ${yearInfo.energy}
+                    </p>
+                    <p style="font-size:1.1em;line-height:1.8;margin-top:15px;">
+                        Ваше число жизненного пути <strong>${lifePath}</strong> в сочетании с персональным годом 
+                        <strong>${personalYear}</strong> создает уникальную энергию для ${yearInfo.themes[0].toLowerCase()}.
+                    </p>
+                    <p style="font-size:1.1em;line-height:1.8;margin-top:15px;">
+                        Как ${zodiac.symbol} <strong>${zodiac.name}</strong> с асцендентом в ${ascendant.symbol} 
+                        <strong>${ascendant.name}</strong>, вы обладаете особой силой в 2026 году!
+                    </p>
+                    <div class="info-box" style="margin-top:20px;background:rgba(255,255,255,0.3);">
+                        <strong style="font-size:1.2em;">Главное правило года:</strong><br>
+                        <span style="font-size:1.1em;">${yearInfo.advice}</span>
+                    </div>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <h2 style="font-size:2.5em;margin-bottom:10px;">✨</h2>
+                    <h2>Помните</h2>
+                    <p style="font-size:1.1em;line-height:1.8;margin-top:15px;">
+                        Нумерология и астрология - это карта, но вы - навигатор своей судьбы. 
+                        Используйте эту информацию как руководство, но всегда доверяйте своей интуиции 
+                        и принимайте собственные решения. Ваша свободная воля - самая мощная сила!
+                    </p>
+                    <p style="font-size:1.5em;margin-top:20px;font-weight:bold;">
+                        Счастливого 2026 года! 🌟
+                    </p>
+                </div>
+                <div style="text-align:center;margin-top:30px;">
+                    <button onclick="window.print()" style="max-width:400px;">
+                        💾 Сохранить прогноз (Печать)
+                    </button>
+                </div>
+            `;
+
+            // Прокрутить наверх
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+</html>                <span>Личное:</span><strong>${m.personal}/10</strong>
+                            </div>
+                            <div class="energy-bar"><div class="energy-fill" style="width:${m.personal*10}%"></div></div>
+                            <div style="display:flex;justify-content:space-between;margin:5px 0;">
+                                <span>Карьера:</span><strong>${m.career}/10</strong>
+                            </div>
+                            <div class="energy-bar"><div class="energy-fill" style="width:${m.career*10}%"></div></div>
+                            <div style="display:flex;justify-content:space-between;margin:5px 0;">
+                                <span>Любовь:</span><strong>${m.love}/10</strong>
+                            </div>
+                            <div class="energy-bar"><div class="energy-fill" style="width:${m.love*10}%"></div></div>
+                            <div style="display:flex;justify-content:space-between;margin:5px 0;">
+                                <span>Финансы:</span><strong>${m.finance}/10</strong>
+                            </div>
+                            <div class="energy-bar"><div class="energy-fill" style="width:${m.finance*10}%"></div></div>
+                            <div style="display:flex;justify-content:space-between;margin:5px 0;">
